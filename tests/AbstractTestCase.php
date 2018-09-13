@@ -12,16 +12,25 @@
 namespace Tests;
 
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use Carbon\CarbonInterval;
+use Carbon\Translator;
 use Closure;
-use PHPUnit_Framework_TestCase;
+use DateTime;
+use PHPUnit\Framework\TestCase;
 
-abstract class AbstractTestCase extends PHPUnit_Framework_TestCase
+abstract class AbstractTestCase extends TestCase
 {
     /**
      * @var \Carbon\Carbon
      */
     protected $now;
+
+    /**
+     * @var \Carbon\CarbonImmutable
+     */
+    protected $immutableNow;
 
     /**
      * @var string
@@ -36,100 +45,174 @@ abstract class AbstractTestCase extends PHPUnit_Framework_TestCase
         date_default_timezone_set('America/Toronto');
 
         Carbon::setTestNow($this->now = Carbon::now());
+        CarbonImmutable::setTestNow($this->immutableNow = CarbonImmutable::now());
     }
 
     protected function tearDown()
     {
         date_default_timezone_set($this->saveTz);
         Carbon::setTestNow();
+        Carbon::resetToStringFormat();
         Carbon::resetMonthsOverflow();
+        Carbon::setTranslator(new Translator('en'));
+        Carbon::setLocale('en');
+        /** @var Translator $translator */
+        $translator = Carbon::getTranslator();
+        $translator->resetMessages();
+        CarbonImmutable::setTestNow();
+        CarbonImmutable::resetToStringFormat();
+        CarbonImmutable::resetMonthsOverflow();
+        CarbonImmutable::setTranslator(new Translator('en'));
+        Carbon::setLocale('en');
+        /** @var Translator $translator */
+        $translator = CarbonImmutable::getTranslator();
+        $translator->resetMessages();
     }
 
-    protected function assertCarbon(Carbon $d, $year, $month, $day, $hour = null, $minute = null, $second = null)
+    public function assertCarbon(CarbonInterface $d, $year, $month, $day, $hour = null, $minute = null, $second = null, $micro = null)
     {
-        $actual = array(
+        $expected = [
             'years' => $year,
             'months' => $month,
             'day' => $day,
-        );
+        ];
 
-        $expected = array(
+        $actual = [
             'years' => $d->year,
             'months' => $d->month,
             'day' => $d->day,
-        );
+        ];
 
         if ($hour !== null) {
-            $expected['hours'] = $d->hour;
-            $actual['hours'] = $hour;
+            $actual['hours'] = $d->hour;
+            $expected['hours'] = $hour;
         }
 
         if ($minute !== null) {
-            $expected['minutes'] = $d->minute;
-            $actual['minutes'] = $minute;
+            $actual['minutes'] = $d->minute;
+            $expected['minutes'] = $minute;
         }
 
         if ($second !== null) {
-            $expected['seconds'] = $d->second;
-            $actual['seconds'] = $second;
+            $actual['seconds'] = $d->second;
+            $expected['seconds'] = $second;
+        }
+
+        if ($micro !== null) {
+            $actual['micro'] = $d->micro;
+            $expected['micro'] = $micro;
         }
 
         $this->assertSame($expected, $actual);
     }
 
-    protected function assertInstanceOfCarbon($d)
+    public function assertCarbonTime(CarbonInterface $d, $hour = null, $minute = null, $second = null, $micro = null)
     {
-        $this->assertInstanceOf('Carbon\Carbon', $d);
+        $actual = [];
+
+        $expected = [];
+
+        if ($hour !== null) {
+            $actual['hours'] = $d->hour;
+            $expected['hours'] = $hour;
+        }
+
+        if ($minute !== null) {
+            $actual['minutes'] = $d->minute;
+            $expected['minutes'] = $minute;
+        }
+
+        if ($second !== null) {
+            $actual['seconds'] = $d->second;
+            $expected['seconds'] = $second;
+        }
+
+        if ($micro !== null) {
+            $actual['micro'] = $d->micro;
+            $expected['micro'] = $micro;
+        }
+
+        $this->assertSame($expected, $actual);
     }
 
-    protected function assertCarbonInterval(CarbonInterval $ci, $years, $months = null, $days = null, $hours = null, $minutes = null, $seconds = null)
+    public function assertInstanceOfCarbon($d)
     {
-        $expected = array('years' => $ci->years);
+        $this->assertInstanceOf(CarbonInterface::class, $d);
+    }
 
-        $actual = array('years' => $years);
+    public function assertCarbonInterval(CarbonInterval $ci, $years, $months = null, $days = null, $hours = null, $minutes = null, $seconds = null)
+    {
+        $actual = ['years' => $ci->years];
+
+        $expected = ['years' => $years];
 
         if ($months !== null) {
-            $expected['months'] = $ci->months;
-            $actual['months'] = $months;
+            $actual['months'] = $ci->months;
+            $expected['months'] = $months;
         }
 
         if ($days !== null) {
-            $expected['days'] = $ci->dayz;
-            $actual['days'] = $days;
+            $actual['days'] = $ci->dayz;
+            $expected['days'] = $days;
         }
 
         if ($hours !== null) {
-            $expected['hours'] = $ci->hours;
-            $actual['hours'] = $hours;
+            $actual['hours'] = $ci->hours;
+            $expected['hours'] = $hours;
         }
 
         if ($minutes !== null) {
-            $expected['minutes'] = $ci->minutes;
-            $actual['minutes'] = $minutes;
+            $actual['minutes'] = $ci->minutes;
+            $expected['minutes'] = $minutes;
         }
 
         if ($seconds !== null) {
-            $expected['seconds'] = $ci->seconds;
-            $actual['seconds'] = $seconds;
+            $actual['seconds'] = $ci->seconds;
+            $expected['seconds'] = $seconds;
         }
 
         $this->assertSame($expected, $actual);
     }
 
-    protected function assertInstanceOfCarbonInterval($d)
+    public function assertInstanceOfCarbonInterval($d)
     {
         $this->assertInstanceOf('Carbon\CarbonInterval', $d);
     }
 
-    protected function wrapWithTestNow(Closure $func, Carbon $dt = null)
+    public function wrapWithTestNow(Closure $func, CarbonInterface $dt = null)
     {
+        $test = Carbon::getTestNow();
         Carbon::setTestNow($dt ?: Carbon::now());
         $func();
-        Carbon::setTestNow();
+        Carbon::setTestNow($test);
     }
 
-    protected function wrapWithNonDstDate(Closure $func)
+    public function wrapWithNonDstDate(Closure $func)
     {
         $this->wrapWithTestNow($func, Carbon::now()->startOfYear());
+    }
+
+    /**
+     * Standardize given set of dates (or period) before assertion.
+     *
+     * @param array|\DatePeriod $dates
+     *
+     * @return array
+     */
+    public function standardizeDates($dates)
+    {
+        $result = [];
+
+        foreach ($dates as $date) {
+            if ($date instanceof DateTime) {
+                $date = Carbon::instance($date);
+            } elseif (is_string($date)) {
+                $date = Carbon::parse($date);
+            }
+
+            $result[] = $date->format('Y-m-d H:i:s P');
+        }
+
+        return $result;
     }
 }

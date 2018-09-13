@@ -26,6 +26,12 @@ class CreateTest extends AbstractTestCase
     public function testCreateWithDefaults()
     {
         $d = Carbon::create();
+        $this->assertSame($d->getTimestamp(), Carbon::create('0000-01-01 00:00:00')->getTimestamp());
+    }
+
+    public function testCreateWithNull()
+    {
+        $d = Carbon::create(null, null, null, null, null, null);
         $this->assertSame($d->getTimestamp(), Carbon::now()->getTimestamp());
     }
 
@@ -61,10 +67,20 @@ class CreateTest extends AbstractTestCase
 
     /**
      * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Unexpected data found.
      */
     public function testCreateWithInvalidMonth()
     {
         Carbon::create(null, -5);
+    }
+
+    public function testCreateWithInvalidMonthNonStrictMode()
+    {
+        Carbon::useStrictMode(false);
+        $this->assertFalse(Carbon::isStrictModeEnabled());
+        $this->assertFalse(Carbon::create(null, -5));
+        Carbon::useStrictMode(true);
+        $this->assertTrue(Carbon::isStrictModeEnabled());
     }
 
     public function testCreateMonthWraps()
@@ -167,6 +183,14 @@ class CreateTest extends AbstractTestCase
         $d = Carbon::create(2012, 1, 1, 0, 0, 0, 'Europe/London');
         $this->assertCarbon($d, 2012, 1, 1, 0, 0, 0);
         $this->assertSame('Europe/London', $d->tzName);
+    }
+
+    public function testMake()
+    {
+        $this->assertCarbon(Carbon::make('2017-01-05'), 2017, 1, 5, 0, 0, 0);
+        $this->assertCarbon(Carbon::make(new \DateTime('2017-01-05')), 2017, 1, 5, 0, 0, 0);
+        $this->assertCarbon(Carbon::make(new Carbon('2017-01-05')), 2017, 1, 5, 0, 0, 0);
+        $this->assertNull(Carbon::make(3));
     }
 
     /**

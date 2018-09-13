@@ -18,6 +18,18 @@ use Tests\AbstractTestCase;
 
 class ConstructTest extends AbstractTestCase
 {
+    public function testInheritedConstruct()
+    {
+        $ci = new CarbonInterval('PT0S');
+        $this->assertSame('PT0S', $ci->spec());
+        $ci = new CarbonInterval('P1Y2M3D');
+        $this->assertSame('P1Y2M3D', $ci->spec());
+        $ci = CarbonInterval::create('PT0S');
+        $this->assertSame('PT0S', $ci->spec());
+        $ci = CarbonInterval::create('P1Y2M3D');
+        $this->assertSame('P1Y2M3D', $ci->spec());
+    }
+
     public function testDefaults()
     {
         $ci = new CarbonInterval();
@@ -188,6 +200,32 @@ class ConstructTest extends AbstractTestCase
         $this->assertCarbonInterval($ci, 0, 0, 0, 0, 0, 3);
     }
 
+    public function testMilliseconds()
+    {
+        $ci = CarbonInterval::milliseconds(2);
+        $this->assertInstanceOfCarbonInterval($ci);
+        $this->assertCarbonInterval($ci, 0, 0, 0, 0, 0, 0);
+        $this->assertSame(2, $ci->milliseconds);
+
+        $ci = CarbonInterval::millisecond();
+        $this->assertInstanceOfCarbonInterval($ci);
+        $this->assertCarbonInterval($ci, 0, 0, 0, 0, 0, 0);
+        $this->assertSame(1, $ci->milliseconds);
+    }
+
+    public function testMicroseconds()
+    {
+        $ci = CarbonInterval::microseconds(2);
+        $this->assertInstanceOfCarbonInterval($ci);
+        $this->assertCarbonInterval($ci, 0, 0, 0, 0, 0, 0);
+        $this->assertSame(2, $ci->microseconds);
+
+        $ci = CarbonInterval::microsecond();
+        $this->assertInstanceOfCarbonInterval($ci);
+        $this->assertCarbonInterval($ci, 0, 0, 0, 0, 0, 0);
+        $this->assertSame(1, $ci->microseconds);
+    }
+
     public function testYearsAndHours()
     {
         $ci = new CarbonInterval(5, 0, 0, 0, 3, 0, 0);
@@ -214,7 +252,7 @@ class ConstructTest extends AbstractTestCase
         $ci = CarbonInterval::instance(new DateInterval('P2Y1M5DT22H33M44S'));
         $this->assertInstanceOfCarbonInterval($ci);
         $this->assertCarbonInterval($ci, 2, 1, 5, 22, 33, 44);
-        $this->assertTrue($ci->days === false || $ci->days === CarbonInterval::PHP_DAYS_FALSE);
+        $this->assertFalse($ci->days);
     }
 
     public function testInstanceWithNegativeDateInterval()
@@ -224,15 +262,39 @@ class ConstructTest extends AbstractTestCase
         $ci = CarbonInterval::instance($di);
         $this->assertInstanceOfCarbonInterval($ci);
         $this->assertCarbonInterval($ci, 2, 1, 5, 22, 33, 44);
-        $this->assertTrue($ci->days === false || $ci->days === CarbonInterval::PHP_DAYS_FALSE);
+        $this->assertFalse($ci->days);
         $this->assertSame(1, $ci->invert);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testInstanceWithDaysThrowsException()
+    public function testInstanceWithDays()
     {
-        CarbonInterval::instance(Carbon::now()->diff(Carbon::now()->addWeeks(3)));
+        $ci = CarbonInterval::instance(Carbon::now()->diff(Carbon::now()->addWeeks(3)));
+        $this->assertCarbonInterval($ci, 0, 0, 21, 0, 0, 0);
+    }
+
+    public function testCopy()
+    {
+        $one = CarbonInterval::days(10);
+        $two = $one->hours(6)->copy()->hours(3);
+        $this->assertCarbonInterval($one, 0, 0, 10, 6, 0, 0);
+        $this->assertCarbonInterval($two, 0, 0, 10, 3, 0, 0);
+    }
+
+    public function testMake()
+    {
+        $this->assertCarbonInterval(CarbonInterval::make('3 hours 30 m'), 0, 0, 0, 3, 30, 0);
+        $this->assertCarbonInterval(CarbonInterval::make('PT5H'), 0, 0, 0, 5, 0, 0);
+        $this->assertCarbonInterval(CarbonInterval::make(new DateInterval('P1D')), 0, 0, 1, 0, 0, 0);
+        $this->assertCarbonInterval(CarbonInterval::make(new CarbonInterval('P2M')), 0, 2, 0, 0, 0, 0);
+        $this->assertNull(CarbonInterval::make(3));
+    }
+
+    /**
+     * @expectedException \BadMethodCallException
+     * @expectedExceptionMessage Unknown fluent constructor 'anything'
+     */
+    public function testCallInvalidStaticMethod()
+    {
+        CarbonInterval::anything();
     }
 }

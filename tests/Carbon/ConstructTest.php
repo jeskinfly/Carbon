@@ -67,11 +67,11 @@ class ConstructTest extends AbstractTestCase
         $timezone = 'Europe/London';
         $dtz = new DateTimeZone($timezone);
         $dt = new DateTime('now', $dtz);
-        $dayLightSavingTimeOffset = $dt->format('I');
+        $dayLightSavingTimeOffset = (int) $dt->format('I');
 
         $c = new Carbon('now', $dtz);
         $this->assertSame($timezone, $c->tzName);
-        $this->assertSame(0 + $dayLightSavingTimeOffset, $c->offsetHours);
+        $this->assertSame($dayLightSavingTimeOffset, $c->offsetHours);
     }
 
     public function testParseSettingTimezone()
@@ -79,11 +79,11 @@ class ConstructTest extends AbstractTestCase
         $timezone = 'Europe/London';
         $dtz = new DateTimeZone($timezone);
         $dt = new DateTime('now', $dtz);
-        $dayLightSavingTimeOffset = $dt->format('I');
+        $dayLightSavingTimeOffset = (int) $dt->format('I');
 
         $c = Carbon::parse('now', $dtz);
         $this->assertSame($timezone, $c->tzName);
-        $this->assertSame(0 + $dayLightSavingTimeOffset, $c->offsetHours);
+        $this->assertSame($dayLightSavingTimeOffset, $c->offsetHours);
     }
 
     public function testSettingTimezoneWithString()
@@ -91,7 +91,7 @@ class ConstructTest extends AbstractTestCase
         $timezone = 'Asia/Tokyo';
         $dtz = new DateTimeZone($timezone);
         $dt = new DateTime('now', $dtz);
-        $dayLightSavingTimeOffset = $dt->format('I');
+        $dayLightSavingTimeOffset = (int) $dt->format('I');
 
         $c = new Carbon('now', $timezone);
         $this->assertSame($timezone, $c->tzName);
@@ -103,10 +103,27 @@ class ConstructTest extends AbstractTestCase
         $timezone = 'Asia/Tokyo';
         $dtz = new DateTimeZone($timezone);
         $dt = new DateTime('now', $dtz);
-        $dayLightSavingTimeOffset = $dt->format('I');
+        $dayLightSavingTimeOffset = (int) $dt->format('I');
 
         $c = Carbon::parse('now', $timezone);
         $this->assertSame($timezone, $c->tzName);
         $this->assertSame(9 + $dayLightSavingTimeOffset, $c->offsetHours);
+    }
+
+    public function testMockingWithMicroseconds()
+    {
+        $c = new Carbon(Carbon::now()->toDateTimeString().'.123456');
+        Carbon::setTestNow($c);
+
+        $mockedC = Carbon::now();
+        $this->assertTrue($c->eq($mockedC));
+
+        Carbon::setTestNow();
+    }
+
+    public function testTimestamp()
+    {
+        $date = new Carbon(1367186296);
+        $this->assertSame('Sunday 28 April 2013 21:58:16', $date->format('l j F Y H:i:s'));
     }
 }

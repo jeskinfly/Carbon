@@ -116,6 +116,15 @@ class CreateSafeTest extends AbstractTestCase
 
     /**
      * @expectedException \Carbon\Exceptions\InvalidDateException
+     * @expectedExceptionMessage year : 0 is not a valid value.
+     */
+    public function testCreateSafeThrowsExceptionForYearEqualToZero()
+    {
+        Carbon::createSafe(0);
+    }
+
+    /**
+     * @expectedException \Carbon\Exceptions\InvalidDateException
      * @expectedExceptionMessage year : -5 is not a valid value.
      */
     public function testCreateSafeThrowsExceptionForYearLowerThanZero()
@@ -156,7 +165,7 @@ class CreateSafeTest extends AbstractTestCase
     public function testCreateSafePassesForFebruaryInLeapYear()
     {
         // 29 days in February for a leap year
-        Carbon::createSafe(2016, 2, 29, 17, 16, 15);
+        $this->assertSame(29, Carbon::createSafe(2016, 2, 29, 17, 16, 15)->day);
     }
 
     /**
@@ -168,6 +177,27 @@ class CreateSafeTest extends AbstractTestCase
         // 28 days in February for a non-leap year
         $this->assertFalse(Carbon::create(2015, 2)->isLeapYear());
         Carbon::createSafe(2015, 2, 29, 17, 16, 15);
+    }
+
+    public function testCreateSafePassesForInvalidDSTTime()
+    {
+        $message = '';
+        $date = null;
+        try {
+            // 1h jumped to 2h because of the DST, so 1h30 is not a safe date in PHP 5.4+
+            Carbon::createSafe(2014, 3, 30, 1, 30, 0, 'Europe/London');
+        } catch (InvalidDateException $exception) {
+            $message = $exception->getMessage();
+        }
+
+        $this->assertContains('hour : 1 is not a valid value.', $message);
+    }
+
+    public function testCreateSafePassesForValidDSTTime()
+    {
+        $this->assertSame(0, Carbon::createSafe(2014, 3, 30, 0, 30, 0, 'Europe/London')->hour);
+        $this->assertSame(2, Carbon::createSafe(2014, 3, 30, 2, 30, 0, 'Europe/London')->hour);
+        $this->assertSame(1, Carbon::createSafe(2014, 3, 30, 1, 30, 0, 'UTC')->hour);
     }
 
     /**
@@ -182,7 +212,7 @@ class CreateSafeTest extends AbstractTestCase
     public function testCreateSafePassesForFebruaryInNonLeapYear()
     {
         // 28 days in February for a non-leap year
-        Carbon::createSafe(2015, 2, 28, 17, 16, 15);
+        $this->assertSame(28, Carbon::createSafe(2015, 2, 28, 17, 16, 15)->day);
     }
 
     public function testCreateSafePasses()

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-return array(
+return [
     'year' => 'rok|:count roky|:count rokov',
     'y' => 'rok|:count roky|:count rokov',
     'month' => 'mesiac|:count mesiace|:count mesiacov',
@@ -26,6 +26,15 @@ return array(
     's' => 'sekundu|:count sekundy|:count sekúnd',
     'ago' => 'pred :time',
     'from_now' => 'za :time',
-    'after' => ':time neskôr',
+    'after' => 'o :time neskôr',
     'before' => ':time predtým',
-);
+    'year_ago' => 'rokom|:count rokmi|:count rokmi',
+    'month_ago' => 'mesiacom|:count mesiacmi|:count mesiacmi',
+    'week_ago' => 'týždňom|:count týždňami|:count týždňami',
+    'day_ago' => 'dňom|:count dňami|:count dňami',
+    'hour_ago' => 'hodinou|:count hodinami|:count hodinami',
+    'minute_ago' => 'minútou|:count minútami|:count minútami',
+    'second_ago' => 'sekundou|:count sekundami|:count sekundami',
+    'first_day_of_week' => 1,
+    'day_of_first_week_of_year' => 4,
+];

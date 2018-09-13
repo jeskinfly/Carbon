@@ -11,198 +11,212 @@
 
 namespace Tests\Localization;
 
-use Carbon\Carbon;
-use Tests\AbstractTestCase;
-
-class HuTest extends AbstractTestCase
+class HuTest extends LocalizationTestCase
 {
-    public function testDiffForHumansLocalizedInHungarian()
-    {
-        Carbon::setLocale('hu');
+    const LOCALE = 'hu'; // Hungarian
 
-        $scope = $this;
-        $this->wrapWithNonDstDate(function () use ($scope) {
-            $d = Carbon::now()->subSecond();
-            $scope->assertSame('1 másodperce', $d->diffForHumans());
-
-            $d = Carbon::now()->subSeconds(2);
-            $scope->assertSame('2 másodperce', $d->diffForHumans());
-
-            $d = Carbon::now()->subMinute();
-            $scope->assertSame('1 perce', $d->diffForHumans());
-
-            $d = Carbon::now()->subMinutes(2);
-            $scope->assertSame('2 perce', $d->diffForHumans());
-
-            $d = Carbon::now()->subHour();
-            $scope->assertSame('1 órája', $d->diffForHumans());
-
-            $d = Carbon::now()->subHours(2);
-            $scope->assertSame('2 órája', $d->diffForHumans());
-
-            $d = Carbon::now()->subDay();
-            $scope->assertSame('1 napja', $d->diffForHumans());
-
-            $d = Carbon::now()->subDays(2);
-            $scope->assertSame('2 napja', $d->diffForHumans());
-
-            $d = Carbon::now()->subWeek();
-            $scope->assertSame('1 hete', $d->diffForHumans());
-
-            $d = Carbon::now()->subWeeks(2);
-            $scope->assertSame('2 hete', $d->diffForHumans());
-
-            $d = Carbon::now()->subMonth();
-            $scope->assertSame('1 hónapja', $d->diffForHumans());
-
-            $d = Carbon::now()->subMonths(2);
-            $scope->assertSame('2 hónapja', $d->diffForHumans());
-
-            $d = Carbon::now()->subYear();
-            $scope->assertSame('1 éve', $d->diffForHumans());
-
-            $d = Carbon::now()->subYears(2);
-            $scope->assertSame('2 éve', $d->diffForHumans());
-
-            $d = Carbon::now()->addSecond();
-            $scope->assertSame('1 másodperc múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addSeconds(2);
-            $scope->assertSame('2 másodperc múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addMinute();
-            $scope->assertSame('1 perc múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addMinutes(2);
-            $scope->assertSame('2 perc múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addHour();
-            $scope->assertSame('1 óra múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addHours(2);
-            $scope->assertSame('2 óra múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addDay();
-            $scope->assertSame('1 nap múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addDays(2);
-            $scope->assertSame('2 nap múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addWeek();
-            $scope->assertSame('1 hét múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addWeeks(2);
-            $scope->assertSame('2 hét múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addMonth();
-            $scope->assertSame('1 hónap múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addMonths(2);
-            $scope->assertSame('2 hónap múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addYear();
-            $scope->assertSame('1 év múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addYears(2);
-            $scope->assertSame('2 év múlva', $d->diffForHumans());
-
-            $d = Carbon::now()->addSecond();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 másodperccel később', $d->diffForHumans($d2));
-            $scope->assertSame('1 másodperccel korábban', $d2->diffForHumans($d));
-            $d = Carbon::now()->addSecond(2);
-            $d2 = Carbon::now();
-            $scope->assertSame('2 másodperccel később', $d->diffForHumans($d2));
-            $scope->assertSame('2 másodperccel korábban', $d2->diffForHumans($d));
-
-            $d = Carbon::now()->addMinute();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 perccel később', $d->diffForHumans($d2));
-            $scope->assertSame('1 perccel korábban', $d2->diffForHumans($d));
-            $d = Carbon::now()->addMinute(2);
-            $d2 = Carbon::now();
-            $scope->assertSame('2 perccel később', $d->diffForHumans($d2));
-            $scope->assertSame('2 perccel korábban', $d2->diffForHumans($d));
-
-            $d = Carbon::now()->addHour();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 órával később', $d->diffForHumans($d2));
-            $scope->assertSame('1 órával korábban', $d2->diffForHumans($d));
-            $d = Carbon::now()->addHour(2);
-            $d2 = Carbon::now();
-            $scope->assertSame('2 órával később', $d->diffForHumans($d2));
-            $scope->assertSame('2 órával korábban', $d2->diffForHumans($d));
-
-            $d = Carbon::now()->addDay();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 nappal később', $d->diffForHumans($d2));
-            $scope->assertSame('1 nappal korábban', $d2->diffForHumans($d));
-            $d = Carbon::now()->addDay(2);
-            $d2 = Carbon::now();
-            $scope->assertSame('2 nappal később', $d->diffForHumans($d2));
-            $scope->assertSame('2 nappal korábban', $d2->diffForHumans($d));
-
-            $d = Carbon::now()->addWeek();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 héttel később', $d->diffForHumans($d2));
-            $scope->assertSame('1 héttel korábban', $d2->diffForHumans($d));
-            $d = Carbon::now()->addWeek(2);
-            $d2 = Carbon::now();
-            $scope->assertSame('2 héttel később', $d->diffForHumans($d2));
-            $scope->assertSame('2 héttel korábban', $d2->diffForHumans($d));
-
-            $d = Carbon::now()->addMonth();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 hónappal később', $d->diffForHumans($d2));
-            $scope->assertSame('1 hónappal korábban', $d2->diffForHumans($d));
-            $d = Carbon::now()->addMonth(2);
-            $d2 = Carbon::now();
-            $scope->assertSame('2 hónappal később', $d->diffForHumans($d2));
-            $scope->assertSame('2 hónappal korábban', $d2->diffForHumans($d));
-
-            $d = Carbon::now()->addYear();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 évvel később', $d->diffForHumans($d2));
-            $scope->assertSame('1 évvel korábban', $d2->diffForHumans($d));
-            $d = Carbon::now()->addYear(2);
-            $d2 = Carbon::now();
-            $scope->assertSame('2 évvel később', $d->diffForHumans($d2));
-            $scope->assertSame('2 évvel korábban', $d2->diffForHumans($d));
-
-            $d = Carbon::now()->addSecond();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 másodperc', $d->diffForHumans($d2, true));
-            $scope->assertSame('2 másodperc', $d2->diffForHumans($d->addSecond(), true));
-
-            $d = Carbon::now()->addMinute();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 perc', $d->diffForHumans($d2, true));
-            $scope->assertSame('2 perc', $d2->diffForHumans($d->addMinute(), true));
-
-            $d = Carbon::now()->addHour();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 óra', $d->diffForHumans($d2, true));
-            $scope->assertSame('2 óra', $d2->diffForHumans($d->addHour(), true));
-
-            $d = Carbon::now()->addDay();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 nap', $d->diffForHumans($d2, true));
-            $scope->assertSame('2 nap', $d2->diffForHumans($d->addDay(), true));
-
-            $d = Carbon::now()->addWeek();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 hét', $d->diffForHumans($d2, true));
-            $scope->assertSame('2 hét', $d2->diffForHumans($d->addWeek(), true));
-
-            $d = Carbon::now()->addMonth();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 hónap', $d->diffForHumans($d2, true));
-            $scope->assertSame('2 hónap', $d2->diffForHumans($d->addMonth(), true));
-
-            $d = Carbon::now()->addYear();
-            $d2 = Carbon::now();
-            $scope->assertSame('1 év', $d->diffForHumans($d2, true));
-            $scope->assertSame('2 év', $d2->diffForHumans($d->addYear(), true));
-        });
-    }
+    const CASES = [
+        // Carbon::parse('2018-01-04 00:00:00')->addDays(1)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Tomorrow at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->addDays(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Saturday at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->addDays(3)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Sunday at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->addDays(4)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Monday at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->addDays(5)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Tuesday at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Wednesday at 12:00 AM',
+        // Carbon::parse('2018-01-05 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-05 00:00:00'))
+        'Thursday at 12:00 AM',
+        // Carbon::parse('2018-01-06 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-06 00:00:00'))
+        'Friday at 12:00 AM',
+        // Carbon::parse('2018-01-07 00:00:00')->addDays(2)->calendar(Carbon::parse('2018-01-07 00:00:00'))
+        'Tuesday at 12:00 AM',
+        // Carbon::parse('2018-01-07 00:00:00')->addDays(3)->calendar(Carbon::parse('2018-01-07 00:00:00'))
+        'Wednesday at 12:00 AM',
+        // Carbon::parse('2018-01-07 00:00:00')->addDays(4)->calendar(Carbon::parse('2018-01-07 00:00:00'))
+        'Thursday at 12:00 AM',
+        // Carbon::parse('2018-01-07 00:00:00')->addDays(5)->calendar(Carbon::parse('2018-01-07 00:00:00'))
+        'Friday at 12:00 AM',
+        // Carbon::parse('2018-01-07 00:00:00')->addDays(6)->calendar(Carbon::parse('2018-01-07 00:00:00'))
+        'Saturday at 12:00 AM',
+        // Carbon::now()->subDays(2)->calendar()
+        'Last Sunday at 8:49 PM',
+        // Carbon::parse('2018-01-04 00:00:00')->subHours(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Yesterday at 10:00 PM',
+        // Carbon::parse('2018-01-04 12:00:00')->subHours(2)->calendar(Carbon::parse('2018-01-04 12:00:00'))
+        'Today at 10:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->addHours(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Today at 2:00 AM',
+        // Carbon::parse('2018-01-04 23:00:00')->addHours(2)->calendar(Carbon::parse('2018-01-04 23:00:00'))
+        'Tomorrow at 1:00 AM',
+        // Carbon::parse('2018-01-07 00:00:00')->addDays(2)->calendar(Carbon::parse('2018-01-07 00:00:00'))
+        'Tuesday at 12:00 AM',
+        // Carbon::parse('2018-01-08 00:00:00')->subDay()->calendar(Carbon::parse('2018-01-08 00:00:00'))
+        'Yesterday at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->subDays(1)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Yesterday at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->subDays(2)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Last Tuesday at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->subDays(3)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Last Monday at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->subDays(4)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Last Sunday at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->subDays(5)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Last Saturday at 12:00 AM',
+        // Carbon::parse('2018-01-04 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-04 00:00:00'))
+        'Last Friday at 12:00 AM',
+        // Carbon::parse('2018-01-03 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-03 00:00:00'))
+        'Last Thursday at 12:00 AM',
+        // Carbon::parse('2018-01-02 00:00:00')->subDays(6)->calendar(Carbon::parse('2018-01-02 00:00:00'))
+        'Last Wednesday at 12:00 AM',
+        // Carbon::parse('2018-01-07 00:00:00')->subDays(2)->calendar(Carbon::parse('2018-01-07 00:00:00'))
+        'Last Friday at 12:00 AM',
+        // Carbon::parse('2018-01-01 00:00:00')->isoFormat('Qo Mo Do Wo wo')
+        '1 1 1 1 1',
+        // Carbon::parse('2018-01-02 00:00:00')->isoFormat('Do wo')
+        '2 1',
+        // Carbon::parse('2018-01-03 00:00:00')->isoFormat('Do wo')
+        '3 1',
+        // Carbon::parse('2018-01-04 00:00:00')->isoFormat('Do wo')
+        '4 1',
+        // Carbon::parse('2018-01-05 00:00:00')->isoFormat('Do wo')
+        '5 1',
+        // Carbon::parse('2018-01-06 00:00:00')->isoFormat('Do wo')
+        '6 1',
+        // Carbon::parse('2018-01-07 00:00:00')->isoFormat('Do wo')
+        '7 1',
+        // Carbon::parse('2018-01-11 00:00:00')->isoFormat('Do wo')
+        '11 2',
+        // Carbon::parse('2018-02-09 00:00:00')->isoFormat('DDDo')
+        '40',
+        // Carbon::parse('2018-02-10 00:00:00')->isoFormat('DDDo')
+        '41',
+        // Carbon::parse('2018-04-10 00:00:00')->isoFormat('DDDo')
+        '100',
+        // Carbon::parse('2018-02-10 00:00:00', 'Europe/Paris')->isoFormat('h:mm a z')
+        '12:00 am cet',
+        // Carbon::parse('2018-02-10 00:00:00')->isoFormat('h:mm A, h:mm a')
+        '12:00 AM, 12:00 am',
+        // Carbon::parse('2018-02-10 01:30:00')->isoFormat('h:mm A, h:mm a')
+        '1:30 AM, 1:30 am',
+        // Carbon::parse('2018-02-10 02:00:00')->isoFormat('h:mm A, h:mm a')
+        '2:00 AM, 2:00 am',
+        // Carbon::parse('2018-02-10 06:00:00')->isoFormat('h:mm A, h:mm a')
+        '6:00 AM, 6:00 am',
+        // Carbon::parse('2018-02-10 10:00:00')->isoFormat('h:mm A, h:mm a')
+        '10:00 AM, 10:00 am',
+        // Carbon::parse('2018-02-10 12:00:00')->isoFormat('h:mm A, h:mm a')
+        '12:00 PM, 12:00 pm',
+        // Carbon::parse('2018-02-10 17:00:00')->isoFormat('h:mm A, h:mm a')
+        '5:00 PM, 5:00 pm',
+        // Carbon::parse('2018-02-10 21:30:00')->isoFormat('h:mm A, h:mm a')
+        '9:30 PM, 9:30 pm',
+        // Carbon::parse('2018-02-10 23:00:00')->isoFormat('h:mm A, h:mm a')
+        '11:00 PM, 11:00 pm',
+        // Carbon::parse('2018-01-01 00:00:00')->ordinal('hour')
+        '0',
+        // Carbon::now()->subSeconds(1)->diffForHumans()
+        '1 másodperce',
+        // Carbon::now()->subSeconds(1)->diffForHumans(null, false, true)
+        '1 másodperc',
+        // Carbon::now()->subSeconds(2)->diffForHumans()
+        '2 másodperce',
+        // Carbon::now()->subSeconds(2)->diffForHumans(null, false, true)
+        '2 másodperc',
+        // Carbon::now()->subMinutes(1)->diffForHumans()
+        '1 perce',
+        // Carbon::now()->subMinutes(1)->diffForHumans(null, false, true)
+        '1 perc',
+        // Carbon::now()->subMinutes(2)->diffForHumans()
+        '2 perce',
+        // Carbon::now()->subMinutes(2)->diffForHumans(null, false, true)
+        '2 perc',
+        // Carbon::now()->subHours(1)->diffForHumans()
+        '1 órája',
+        // Carbon::now()->subHours(1)->diffForHumans(null, false, true)
+        '1 óra',
+        // Carbon::now()->subHours(2)->diffForHumans()
+        '2 órája',
+        // Carbon::now()->subHours(2)->diffForHumans(null, false, true)
+        '2 óra',
+        // Carbon::now()->subDays(1)->diffForHumans()
+        '1 napja',
+        // Carbon::now()->subDays(1)->diffForHumans(null, false, true)
+        '1 nap',
+        // Carbon::now()->subDays(2)->diffForHumans()
+        '2 napja',
+        // Carbon::now()->subDays(2)->diffForHumans(null, false, true)
+        '2 nap',
+        // Carbon::now()->subWeeks(1)->diffForHumans()
+        '1 hete',
+        // Carbon::now()->subWeeks(1)->diffForHumans(null, false, true)
+        '1 hét',
+        // Carbon::now()->subWeeks(2)->diffForHumans()
+        '2 hete',
+        // Carbon::now()->subWeeks(2)->diffForHumans(null, false, true)
+        '2 hét',
+        // Carbon::now()->subMonths(1)->diffForHumans()
+        '1 hónapja',
+        // Carbon::now()->subMonths(1)->diffForHumans(null, false, true)
+        '1 hónap',
+        // Carbon::now()->subMonths(2)->diffForHumans()
+        '2 hónapja',
+        // Carbon::now()->subMonths(2)->diffForHumans(null, false, true)
+        '2 hónap',
+        // Carbon::now()->subYears(1)->diffForHumans()
+        '1 éve',
+        // Carbon::now()->subYears(1)->diffForHumans(null, false, true)
+        '1 év',
+        // Carbon::now()->subYears(2)->diffForHumans()
+        '2 éve',
+        // Carbon::now()->subYears(2)->diffForHumans(null, false, true)
+        '2 év',
+        // Carbon::now()->addSecond()->diffForHumans()
+        '1 másodperc múlva',
+        // Carbon::now()->addSecond()->diffForHumans(null, false, true)
+        '1 másodperc múlva',
+        // Carbon::now()->addSecond()->diffForHumans(Carbon::now())
+        '1 másodperccel később',
+        // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), false, true)
+        '1 másodperc később',
+        // Carbon::now()->diffForHumans(Carbon::now()->addSecond())
+        '1 másodperccel korábban',
+        // Carbon::now()->diffForHumans(Carbon::now()->addSecond(), false, true)
+        '1 másodperc korábban',
+        // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true)
+        '1 másodperc',
+        // Carbon::now()->addSecond()->diffForHumans(Carbon::now(), true, true)
+        '1 másodperc',
+        // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true)
+        '2 másodperc',
+        // Carbon::now()->diffForHumans(Carbon::now()->addSecond()->addSecond(), true, true)
+        '2 másodperc',
+        // Carbon::now()->addSecond()->diffForHumans(null, false, true, 1)
+        '1 másodperc múlva',
+        // Carbon::now()->addMinute()->addSecond()->diffForHumans(null, true, false, 2)
+        '1 perc 1 másodperc',
+        // Carbon::now()->addYears(2)->addMonths(3)->addDay()->addSecond()->diffForHumans(null, true, true, 4)
+        '2 év 3 hónap 1 nap 1 másodperc',
+        // Carbon::now()->addYears(3)->diffForHumans(null, null, false, 4)
+        '3 év múlva',
+        // Carbon::now()->subMonths(5)->diffForHumans(null, null, true, 4)
+        '5 hónap',
+        // Carbon::now()->subYears(2)->subMonths(3)->subDay()->subSecond()->diffForHumans(null, null, true, 4)
+        '2 év 3 hónap 1 nap 1 másodperc',
+        // Carbon::now()->addWeek()->addHours(10)->diffForHumans(null, true, false, 2)
+        '1 hét 10 óra',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
+        '1 hét 6 nap',
+        // Carbon::now()->addWeek()->addDays(6)->diffForHumans(null, true, false, 2)
+        '1 hét 6 nap',
+        // Carbon::now()->addWeeks(2)->addHour()->diffForHumans(null, true, false, 2)
+        '2 hét 1 óra',
+        // CarbonInterval::days(2)->forHumans()
+        '2 nap',
+        // CarbonInterval::create('P1DT3H')->forHumans(true)
+        '1 nap 3 óra',
+    ];
 }

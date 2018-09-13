@@ -12,10 +12,18 @@
 namespace Tests\Carbon;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Tests\AbstractTestCase;
 
 class AddTest extends AbstractTestCase
 {
+    public function testAddMethod()
+    {
+        $this->assertSame(1977, Carbon::createFromDate(1975)->add(2, 'year')->year);
+        $this->assertSame(1977, Carbon::createFromDate(1975)->add('year', 2)->year);
+        $this->assertSame(1977, Carbon::createFromDate(1975)->add('2 years')->year);
+    }
+
     public function testAddYearsPositive()
     {
         $this->assertSame(1976, Carbon::createFromDate(1975)->addYears(1)->year);
@@ -66,6 +74,35 @@ class AddTest extends AbstractTestCase
         $this->assertSame(13, $dt->hour);
         $this->assertSame(2, $dt->minute);
         $this->assertSame(1, $dt->second);
+    }
+
+    public function testAddCustomWeekdays()
+    {
+        $date = Carbon::createMidnightDate(2018, 5, 25);
+
+        $weekendDays = Carbon::getWeekendDays();
+        Carbon::setWeekendDays([
+            Carbon::WEDNESDAY,
+        ]);
+
+        $date->addWeekdays(2);
+        $this->assertSame(27, $date->day);
+        $date->subWeekdays(-3);
+        $this->assertSame(31, $date->day);
+        $date->addWeekdays(-3);
+        $this->assertSame(27, $date->day);
+        $date->subWeekdays(2);
+        $this->assertSame(25, $date->day);
+        $date->addWeekdays(14);
+        $this->assertSame(10, $date->day);
+        $date->subWeekdays(14);
+        $this->assertSame(25, $date->day);
+        $date->addWeekdays(12);
+        $this->assertSame(8, $date->day);
+        $date->subWeekdays(12);
+        $this->assertSame(25, $date->day);
+
+        Carbon::setWeekendDays($weekendDays);
     }
 
     public function testAddWeekdaysZero()
@@ -168,12 +205,36 @@ class AddTest extends AbstractTestCase
         $this->assertSame(1, Carbon::createFromTime(0, 0, 0)->addSecond()->second);
     }
 
+    public function testAddMicrosecondsPositive()
+    {
+        $this->assertSame(1, Carbon::createFromTime(0, 0, 0)->addMicroseconds(1)->microsecond);
+    }
+
+    public function testAddMicrosecondsZero()
+    {
+        $this->assertSame(100000, Carbon::createFromTime(0, 0, 0.1)->addMicroseconds(0)->microsecond);
+    }
+
+    public function testAddMicrosecondsNegative()
+    {
+        $this->assertSame(999999, Carbon::createFromTime(0, 0, 0)->addMicroseconds(-1)->microsecond);
+        $this->assertSame(99999, Carbon::createFromTime(0, 0, 0.1)->addMicroseconds(-1)->microsecond);
+    }
+
+    public function testAddMicrosecond()
+    {
+        $this->assertSame(100001, Carbon::createFromTime(0, 0, 0.1)->addMicrosecond()->microsecond);
+    }
+
     /**
      * Test non plural methods with non default args.
      */
     public function testAddYearPassingArg()
     {
         $this->assertSame(1977, Carbon::createFromDate(1975)->addYear(2)->year);
+        $this->assertSame(1977, Carbon::createFromDate(1975)->add(2, 'year')->year);
+        $this->assertSame(1977, Carbon::createFromDate(1975)->add(2, 'years')->year);
+        $this->assertSame(1977, Carbon::createFromDate(1975)->add(CarbonInterval::years(2))->year);
     }
 
     public function testAddDayPassingArg()
@@ -183,7 +244,7 @@ class AddTest extends AbstractTestCase
 
     public function testAddHourPassingArg()
     {
-        $this->assertSame(2, Carbon::createFromTime(0)->addHour(2)->hour);
+        $this->assertSame(12, Carbon::createFromTime(10)->addHour(2)->hour);
     }
 
     public function testAddMinutePassingArg()
@@ -264,5 +325,57 @@ class AddTest extends AbstractTestCase
     {
         $this->assertSame(2075, Carbon::createFromDate(1975)->subCenturies(-1)->year);
         $this->assertSame(2175, Carbon::createFromDate(1975)->subCenturies(-2)->year);
+    }
+
+    public function testAddYearNoOverflow()
+    {
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->addYearNoOverflow(), 2017, 2, 28);
+    }
+
+    public function testAddYearWithOverflow()
+    {
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->addYearWithOverflow(), 2017, 3, 1);
+    }
+
+    public function testAddYearNoOverflowPassingArg()
+    {
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->addYearsNoOverflow(2), 2018, 2, 28);
+    }
+
+    public function testAddYearWithOverflowPassingArg()
+    {
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->addYearsWithOverflow(2), 2018, 3, 1);
+    }
+
+    public function testSubYearNoOverflowPassingArg()
+    {
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->subYearsNoOverflow(2), 2014, 2, 28);
+    }
+
+    public function testSubYearWithOverflowPassingArg()
+    {
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->subYearsWithOverflow(2), 2014, 3, 1);
+    }
+
+    public function testSubYearNoOverflow()
+    {
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->subYearNoOverflow(), 2015, 2, 28);
+    }
+
+    public function testSubYearWithOverflow()
+    {
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->subYearWithOverflow(), 2015, 3, 1);
+    }
+
+    public function testUseYearsOverflow()
+    {
+        $this->assertTrue(Carbon::shouldOverflowYears());
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->addYears(2), 2018, 3, 1);
+        Carbon::useYearsOverflow(false);
+        $this->assertFalse(Carbon::shouldOverflowYears());
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->addYears(2), 2018, 2, 28);
+        Carbon::resetYearsOverflow();
+        $this->assertTrue(Carbon::shouldOverflowYears());
+        $this->assertCarbon(Carbon::createFromDate(2016, 2, 29)->addYears(2), 2018, 3, 1);
     }
 }
